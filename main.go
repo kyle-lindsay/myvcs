@@ -5,11 +5,17 @@ import (
 	"os"
 )
 
-func initialise(name string) error {
-	fmt.Println("initialising project " + name)
+func initialise() error {
+	fmt.Println("initialising project ")
 
-	err := os.MkdirAll(".myvcs", 0755)
-	if err != nil {
+	_, err := os.Stat(".myvcs")
+	if err == nil {
+		fmt.Errorf("repository already exists in this directory")
+		return err
+	}
+
+	if err := os.MkdirAll(".myvcs", 0755); err != nil {
+		fmt.Println("Project already initialised")
 		return err
 	}
 
@@ -31,8 +37,10 @@ func initialise(name string) error {
 }
 
 func main() {
-	if len(os.Args) < 3 {
-		fmt.Println("Init requires a project name")
+	argsLength := len(os.Args)
+
+	if argsLength == 1 {
+		fmt.Println("No parameters were provided")
 		return
 	}
 
@@ -40,7 +48,16 @@ func main() {
 
 	switch command {
 	case "init":
-		name := os.Args[2]
-		initialise(name)
+		if argsLength == 2 {
+			if err := initialise(); err != nil {
+				fmt.Println(err)
+			}
+		} else {
+			fmt.Println("init requires no parameters")
+			return
+		}
+	default:
+		fmt.Println("Unknown command " + command)
+		return
 	}
 }
