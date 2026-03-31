@@ -6,16 +6,16 @@ import (
 )
 
 func initialise() error {
-	fmt.Println("initialising project ")
 
 	_, err := os.Stat(".myvcs")
 	if err == nil {
-		fmt.Errorf("repository already exists in this directory")
+		return fmt.Errorf("repository already exists in this directory")
+	}
+	if !os.IsNotExist(err) {
 		return err
 	}
 
 	if err := os.MkdirAll(".myvcs", 0755); err != nil {
-		fmt.Println("Project already initialised")
 		return err
 	}
 
@@ -30,8 +30,6 @@ func initialise() error {
 	if err := os.WriteFile(".myvcs/HEAD", []byte(""), 0644); err != nil {
 		return err
 	}
-
-	fmt.Println("initialised")
 
 	return nil
 }
