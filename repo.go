@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
 func initialise() error {
@@ -49,12 +51,32 @@ func createCommit(repoRoot string, message string) error {
 		}
 
 		entries[i].Hash = hash
-
 	}
+
+	parent, err := readHEAD(repoRoot)
+	if err != nil {
+		return err
+	}
+
+	commit := Commit{
+		Parent:    parent,
+		Message:   message,
+		Timestamp: time.Now(),
+		Files:     entries,
+	}
+
+	_ = commit
 
 	return nil
 }
 
 func readHEAD(repoRoot string) (string, error) {
+	headPath := filepath.Join(repoRoot, ".myvcs", "HEAD")
 
+	data, err := os.ReadFile(headPath)
+	if err != nil {
+		return "", err
+	}
+
+	return strings.TrimSpace(string(data)), nil
 }
