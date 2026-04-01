@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 func initialise() error {
@@ -31,4 +32,29 @@ func initialise() error {
 	}
 
 	return nil
+}
+
+func createCommit(repoRoot string, message string) error {
+	entries, err := buildSnapshot(repoRoot)
+	if err != nil {
+		return err
+	}
+
+	for i, entry := range entries {
+		filePath := filepath.Join(repoRoot, entry.Path)
+
+		hash, err := storeBlob(repoRoot, filePath)
+		if err != nil {
+			return err
+		}
+
+		entries[i].Hash = hash
+
+	}
+
+	return nil
+}
+
+func readHEAD(repoRoot string) (string, error) {
+
 }
