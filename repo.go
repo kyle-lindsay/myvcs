@@ -108,3 +108,21 @@ func readHEAD(repoRoot string) (string, error) {
 
 	return strings.TrimSpace(string(data)), nil
 }
+
+func readCommit(repoRoot string, id string) (Commit, error) {
+	filePath := filepath.Join(repoRoot, ".myvcs", "commits", id+".json")
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return Commit{}, err
+	}
+
+	var contents Commit
+
+	err = json.Unmarshal(data, &contents)
+	if err != nil {
+		return Commit{}, err
+	}
+
+	return contents, nil
+}
