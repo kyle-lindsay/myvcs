@@ -62,7 +62,7 @@ func initialise() error {
 }
 
 func buildSnapshot(root string) ([]FileEntry, error) {
-
+	entries := []FileEntry{}
 }
 
 func hashFile(path string) (string, error) {
