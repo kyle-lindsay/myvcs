@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -36,10 +37,10 @@ func initialise() error {
 	return nil
 }
 
-func createCommit(repoRoot string, message string) error {
+func createCommit(repoRoot string, message string) (string, error) {
 	entries, err := buildSnapshot(repoRoot)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	for i, entry := range entries {
@@ -47,7 +48,7 @@ func createCommit(repoRoot string, message string) error {
 
 		hash, err := storeBlob(repoRoot, filePath)
 		if err != nil {
-			return err
+			return "", err
 		}
 
 		entries[i].Hash = hash
@@ -55,7 +56,7 @@ func createCommit(repoRoot string, message string) error {
 
 	parent, err := readHEAD(repoRoot)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	commit := Commit{
@@ -65,9 +66,36 @@ func createCommit(repoRoot string, message string) error {
 		Files:     entries,
 	}
 
-	_ = commit
+	id, err := hashCommit(commit)
+	if err != nil {
+		return "", err
+	}
+	commit.ID = id
 
-	return nil
+	commitPath := filepath.Join(repoRoot, ".myvcs", "commits", id+".json")
+
+	data, err := json.MarshalIndent(commit, "", "  ")
+	if err != nil {
+		return "", err
+	}
+
+	err = os.MkdirAll(filepath.Dir(commitPath), 0755)
+	if err != nil {
+		return "", err
+	}
+
+	err = os.WriteFile(commitPath, data, 0644)
+	if err != nil {
+		return "", err
+	}
+
+	headPath := filepath.Join(repoRoot, ".myvcs", "HEAD")
+	err = os.WriteFile(headPath, []byte(id), 0644)
+	if err != nil {
+		return "", err
+	}
+
+	return id, nil
 }
 
 func readHEAD(repoRoot string) (string, error) {
