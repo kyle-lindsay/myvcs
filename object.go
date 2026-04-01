@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"os"
 	"path/filepath"
 )
@@ -53,4 +54,17 @@ func storeBlob(repoRoot string, filePath string) (string, error) {
 	}
 
 	return hash, nil
+}
+
+func hashCommit(commit Commit) (string, error) {
+	commitCopy := commit
+	commitCopy.ID = ""
+
+	data, err := json.Marshal(commitCopy)
+	if err != nil {
+		return "", err
+	}
+
+	sum := sha256.Sum256(data)
+	return hex.EncodeToString(sum[:]), nil
 }
