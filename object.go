@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"os"
+	"path/filepath"
 )
 
 func hashFile(path string) (string, error) {
@@ -19,5 +20,37 @@ func hashFile(path string) (string, error) {
 }
 
 func storeBlob(repoRoot string, filePath string) (string, error) {
-	return "", nil
+	hash, err := hashFile(filePath)
+
+	if err != nil {
+		return "", err
+	}
+
+	objectPath := filepath.Join(repoRoot, ".myvcs", "objects", hash)
+
+	_, err = os.Stat(objectPath)
+	if err == nil {
+		return hash, nil
+	}
+
+	if !os.IsNotExist(err) {
+		return "", err
+	}
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return "", err
+	}
+
+	err = os.MkdirAll(filepath.Dir(objectPath), 0755)
+	if err != nil {
+		return "", err
+	}
+
+	err = os.WriteFile(objectPath, data, 0644)
+	if err != nil {
+		return "", err
+	}
+
+	return hash, nil
 }
