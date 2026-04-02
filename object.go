@@ -56,6 +56,17 @@ func storeBlob(repoRoot string, filePath string) (string, error) {
 	return hash, nil
 }
 
+func readBlob(repoRoot string, hash string) ([]byte, error) {
+	filePath := filepath.Join(repoRoot, ".myvcs", "objects", hash)
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
 func hashCommit(commit Commit) (string, error) {
 	commitCopy := commit
 	commitCopy.ID = ""
