@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -152,6 +153,77 @@ func logCommits(repoRoot string) error {
 		fmt.Println()
 
 		current = commit.Parent
+	}
+
+	return nil
+}
+
+func checkoutCommit(repoRoot string, id string) error {
+	commit, err := readCommit(repoRoot, id)
+	if err != nil {
+		return err
+	}
+
+	if err = clearWorkingTree(repoRoot); err != nil {
+		return err
+	}
+
+	if err = restoreWorkingTree(repoRoot, commit.Files); err != nil {
+		return err
+	}
+
+	headFilePath := filepath.Join(repoRoot, ".myvcs", "HEAD")
+	if err = os.WriteFile(headFilePath, []byte(id), 0644); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func clearWorkingTree(repoRoot string) error {
+	err := filepath.WalkDir(repoRoot, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if d.IsDir() && d.Name() == ".myvcs" {
+			return filepath.SkipDir
+		}
+
+		if d.IsDir() {
+			return nil
+		}
+
+		if err := os.Remove(path); err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func restoreWorkingTree(repoRoot string, files []FileEntry) error {
+	for _, entry := range files {
+		data, err := readBlob(repoRoot, entry.Hash)
+		if err != nil {
+			return err
+		}
+
+		fullPath := filepath.Join(repoRoot, entry.Path)
+
+		if err = os.MkdirAll(filepath.Dir(fullPath), 0755); err != nil {
+			return err
+		}
+
+		if err = os.WriteFile(fullPath, data, 0644); err != nil {
+			return err
+		}
 	}
 
 	return nil
