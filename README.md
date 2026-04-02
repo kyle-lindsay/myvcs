@@ -21,4 +21,4 @@ A very simple version-control system written in the Go programming language. It 
 
 * This will revert your project folder to the snapshot stored in the commit with the specified id.
 
-_Note: Project must be initialised with_ `myvcs init` _before any commits are made, and all files in the initialiesd directory will be tracked._
+**_Note: Project must be initialised with_ `myvcs init` _before any commits are made, and all files in the initialiesd directory will be tracked._**
