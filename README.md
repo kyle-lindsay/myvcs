@@ -7,7 +7,7 @@ A very simple version-control system written in the Go programming language. It 
 
 **Initialise a repository with** `myvcs init`
 
-* This will create a `.myvcs/` directory to store commit history.
+* This will create a `.myvcs/` subdirectory to store commit history.
 
 **Create a commit with** `myvcs commit "<message>"`
 
