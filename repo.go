@@ -126,3 +126,33 @@ func readCommit(repoRoot string, id string) (Commit, error) {
 
 	return contents, nil
 }
+
+func logCommits(repoRoot string) error {
+	head, err := readHEAD(repoRoot)
+	if err != nil {
+		return err
+	}
+
+	if head == "" {
+		fmt.Println("No commits yet")
+		return nil
+	}
+
+	current := head
+
+	for current != "" {
+		commit, err := readCommit(repoRoot, current)
+		if err != nil {
+			return err
+		}
+
+		fmt.Println("commit", commit.ID)
+		fmt.Println("Date:", commit.Timestamp)
+		fmt.Println("Message:", commit.Message)
+		fmt.Println()
+
+		current = commit.Parent
+	}
+
+	return nil
+}

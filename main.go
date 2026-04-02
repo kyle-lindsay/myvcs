@@ -43,6 +43,18 @@ func main() {
 			fmt.Println("commit requires a message")
 			return
 		}
+
+	case "log":
+		if argsLength == 2 {
+			if err := logCommits("."); err != nil {
+				fmt.Println(err)
+				return
+			}
+		} else {
+			fmt.Println("log requires no parameters")
+			return
+		}
+
 	default:
 		fmt.Println("Unknown command", command)
 		return
