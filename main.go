@@ -55,6 +55,18 @@ func main() {
 			return
 		}
 
+	case "checkout":
+		if argsLength == 3 {
+			if err := checkoutCommit(".", os.Args[2]); err != nil {
+				fmt.Println(err)
+				return
+			}
+			fmt.Println("Checked out commit", os.Args[2])
+		} else {
+			fmt.Println("checkout requires a commit id")
+			return
+		}
+
 	default:
 		fmt.Println("Unknown command", command)
 		return
