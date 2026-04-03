@@ -8,7 +8,7 @@ A very simple version-control system written in the Go programming language. It 
 
 * Run the command `go build -o myvcs` to build the project into an executable
 
-* Move the compiled program to the desired project folder, or use the absolute filepath to access from anywhwre
+* Move the compiled program to the desired project folder, or use the absolute filepath to access from anywhere
 
 * To run commands, use:
     * `./myvcs <command>` on Mac/Linux
