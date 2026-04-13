@@ -159,6 +159,15 @@ func logCommits(repoRoot string) error {
 }
 
 func checkoutCommit(repoRoot string, id string) error {
+	changed, err := hasChanges(repoRoot)
+	if err != nil {
+		return err
+	}
+
+	if changed {
+		return fmt.Errorf("cannot checkout: working tree has uncommitted changes")
+	}
+
 	commit, err := readCommit(repoRoot, id)
 	if err != nil {
 		return err
@@ -277,4 +286,43 @@ func status(repoRoot string) error {
 	}
 
 	return nil
+}
+
+func hasChanges(repoRoot string) (bool, error) {
+	head, err := readHEAD(repoRoot)
+	if err != nil {
+		return false, err
+	}
+
+	if head == "" {
+		return false, nil
+	}
+
+	commit, err := readCommit(repoRoot, head)
+	if err != nil {
+		return false, err
+	}
+
+	workingSnapshot, err := buildSnapshot(repoRoot)
+	if err != nil {
+		return false, err
+	}
+
+	committedMap := snapshotToMap(commit.Files)
+	workingMap := snapshotToMap(workingSnapshot)
+
+	for path, hash := range workingMap {
+		if _, exists := committedMap[path]; !exists {
+			return true, nil
+		} else if hash != committedMap[path] {
+			return true, nil
+		}
+	}
+
+	for path := range committedMap {
+		if _, exists := workingMap[path]; !exists {
+			return true, nil
+		}
+	}
+	return false, nil
 }
