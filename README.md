@@ -28,6 +28,10 @@ A very simple version-control system written in the Go programming language. It 
 
 * This will display the commit id, timestamp and message of all previous commits, showing the most recent commits first.
 
+**Check current status with** `myvcs status`
+
+* This will show if files have been added, deleted or modified since the previous commit.
+
 **Revert to a previous state with** `myvcs checkout <commit id>`
 
 * This will revert your project folder to the snapshot stored in the commit with the specified id.
