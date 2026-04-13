@@ -67,6 +67,16 @@ func main() {
 			return
 		}
 
+	case "status":
+		if argsLength == 2 {
+			if err := status("."); err != nil {
+				fmt.Println(err)
+				return
+			}
+		} else {
+			fmt.Println("status requires no parameters")
+		}
+
 	default:
 		fmt.Println("Unknown command", command)
 		return
