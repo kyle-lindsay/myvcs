@@ -228,3 +228,53 @@ func restoreWorkingTree(repoRoot string, files []FileEntry) error {
 
 	return nil
 }
+
+func status(repoRoot string) error {
+	hasChanges := false
+
+	head, err := readHEAD(repoRoot)
+	if err != nil {
+		return err
+	}
+
+	if head == "" {
+		fmt.Println("No commits yet")
+		return nil
+	}
+
+	commit, err := readCommit(repoRoot, head)
+	if err != nil {
+		return err
+	}
+
+	workingSnapshot, err := buildSnapshot(repoRoot)
+	if err != nil {
+		return err
+	}
+
+	committedMap := snapshotToMap(commit.Files)
+	workingMap := snapshotToMap(workingSnapshot)
+
+	for path, hash := range workingMap {
+		if _, exists := committedMap[path]; !exists {
+			fmt.Println(path, "(A)")
+			hasChanges = true
+		} else if hash != committedMap[path] {
+			fmt.Println(path, "(M)")
+			hasChanges = true
+		}
+	}
+
+	for path := range committedMap {
+		if _, exists := workingMap[path]; !exists {
+			fmt.Println(path, "(D)")
+			hasChanges = true
+		}
+	}
+
+	if !hasChanges {
+		fmt.Println("Working tree clean")
+	}
+
+	return nil
+}
