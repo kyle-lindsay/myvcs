@@ -2,12 +2,23 @@
 
 A very simple version-control system written in the Go programming language. It allows a user to initialise a repository, commit changes, and revert to older versions.
 
+## How to install:
+
+* Clone the repository `https://github.com/kyle-lindsay/myvcs`
+
+* Run the command `go build -o myvcs` to build the project into an executable
+
+* Move the compiled program to the desired project folder, or use the absolute filepath to access from anywhere
+
+* To run commands, use:
+    * `./myvcs <command>` on Mac/Linux
+    * `myvcs.exe <command>` on Windows
 
 ## How To Use
 
 **Initialise a repository with** `myvcs init`
 
-* This will create a `.myvcs/` directory to store commit history.
+* This will create a `.myvcs/` subdirectory to store commit history.
 
 **Create a commit with** `myvcs commit "<message>"`
 

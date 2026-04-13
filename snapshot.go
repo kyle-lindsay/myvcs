@@ -49,3 +49,13 @@ func buildSnapshot(root string) ([]FileEntry, error) {
 
 	return entries, nil
 }
+
+func snapshotToMap(files []FileEntry) map[string]string {
+	fileMap := make(map[string]string)
+
+	for _, entry := range files {
+		fileMap[entry.Path] = entry.Hash
+	}
+
+	return fileMap
+}
